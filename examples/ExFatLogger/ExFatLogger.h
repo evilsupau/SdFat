@@ -3,7 +3,8 @@
 #ifndef ExFatLogger_h
 #define ExFatLogger_h
 const size_t ADC_COUNT = 4;
-struct data_t {
-  uint16_t adc[ADC_COUNT];
+struct data_t
+{
+    uint16_t adc[ADC_COUNT];
 };
 #endif  // ExFatLogger_h

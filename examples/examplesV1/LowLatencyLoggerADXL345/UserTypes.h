@@ -6,9 +6,10 @@
 #define FILE_BASE_NAME "ADXL4G"
 // User data types.  Modify for your data items.
 const uint8_t ACCEL_DIM = 3;
-struct data_t {
-  uint32_t time;
-  int16_t accel[ACCEL_DIM];
+struct data_t
+{
+    uint32_t time;
+    int16_t accel[ACCEL_DIM];
 };
 void acquireData(data_t* data);
 void printData(Print* pr, data_t* data);

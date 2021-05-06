@@ -22,37 +22,30 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-#include "SysCall.h"
-#if 0  // defined(__AVR_ATmega328P__) && !ENABLE_ARDUINO_FEATURES
-#include <avr/interrupt.h>
-
-// ISR for timer 2 Compare A interrupt
-volatile uint16_t timer2 = 0;
-ISR(TIMER2_COMPA_vect)
+#include "SdCardInfo.h"
+//------------------------------------------------------------------------------
+#undef SD_CARD_ERROR
+#define SD_CARD_ERROR(e, m) case SD_CARD_ERROR_##e: pr->print(F(#e)); break;
+void printSdErrorSymbol(print_t* pr, uint8_t code)
 {
-    timer2++;
-}
-SdMillis_t SysCall::curTimeMS()
-{
-    if (TIMSK2 != (1 << OCIE2A))
+    pr->print(F("SD_CARD_ERROR_"));
+    switch (code)
     {
-        // use system clock (clkI/O).
-        ASSR &= ~(1 << AS2);
-        // Clear Timer on Compare Match (CTC) mode
-        TCCR2A = (1 << WGM21);
-        // Only need 64x prescale bits in TCCR2B
-        TCCR2B = (1 << CS22);
-        // set TOP so timer period is 1 ms.
-#if F_CPU/64000 > 250
-#error F_CPU too large.
-#endif  // F_CPU/64000 > 250
-        OCR2A = F_CPU / 64000UL - 1;
-        // Enable interrupt.
-        TIMSK2 = (1 << OCIE2A);
+            SD_ERROR_CODE_LIST
+        default:
+            pr->print(F("UNKNOWN"));
     }
-    cli();
-    uint16_t rtn = timer2;
-    sei();
-    return rtn;
 }
-#endif  // defined(__AVR_ATmega328P__) && !ENABLE_ARDUINO_FEATURES
+//------------------------------------------------------------------------------
+#undef SD_CARD_ERROR
+#define SD_CARD_ERROR(e, m) case SD_CARD_ERROR_##e: pr->print(F(m)); break;
+void printSdErrorText(print_t* pr, uint8_t code)
+{
+    switch
+    (code)
+    {
+            SD_ERROR_CODE_LIST
+        default:
+            pr->print(F("Unknown error"));
+    }
+}
