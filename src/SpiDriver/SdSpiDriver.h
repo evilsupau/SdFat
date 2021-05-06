@@ -52,13 +52,20 @@ const uint8_t DEDICATED_SPI = 1;
  * \param[in] opt option field of SdSpiConfig.
  * \return true for shared SPI.
  */
-inline bool spiOptionShared(uint8_t opt) {return !(opt & DEDICATED_SPI);}
+inline bool spiOptionShared(uint8_t opt)
+{
+    return !(opt & DEDICATED_SPI);
+}
 #else  // ENABLE_DEDICATED_SPI
 /**
  * \param[in] opt option field of SdSpiConfig.
  * \return true for shared SPI.
  */
-inline bool spiOptionShared(uint8_t opt) {(void)opt; return true;}
+inline bool spiOptionShared(uint8_t opt)
+{
+    (void)opt;
+    return true;
+}
 #endif  // ENABLE_DEDICATED_SPI
 //------------------------------------------------------------------------------
 /** SPISettings for SCK frequency in Hz. */
@@ -101,46 +108,47 @@ typedef void*  SpiPort_t;
  * \class SdSpiConfig
  * \brief SPI card configuration.
  */
-class SdSpiConfig {
- public:
-   /** SdSpiConfig constructor.
-   *
-   * \param[in] cs Chip select pin.
-   * \param[in] opt Options.
-   * \param[in] maxSpeed Maximum SCK frequency.
-   * \param[in] port The SPI port to use.
-   */
-  SdSpiConfig(SdCsPin_t cs, uint8_t opt, uint32_t maxSpeed, SpiPort_t* port) :
-    csPin(cs), options(opt), maxSck(maxSpeed), spiPort(port) {}
+class SdSpiConfig
+{
+public:
+    /** SdSpiConfig constructor.
+    *
+    * \param[in] cs Chip select pin.
+    * \param[in] opt Options.
+    * \param[in] maxSpeed Maximum SCK frequency.
+    * \param[in] port The SPI port to use.
+    */
+    SdSpiConfig(SdCsPin_t cs, uint8_t opt, uint32_t maxSpeed, SpiPort_t* port) :
+        csPin(cs), options(opt), maxSck(maxSpeed), spiPort(port) {}
 
-  /** SdSpiConfig constructor.
-   *
-   * \param[in] cs Chip select pin.
-   * \param[in] opt Options.
-   * \param[in] maxSpeed Maximum SCK frequency.
-   */
-  SdSpiConfig(SdCsPin_t cs, uint8_t opt, uint32_t maxSpeed) :
-    csPin(cs), options(opt), maxSck(maxSpeed) {}
-  /** SdSpiConfig constructor.
-   *
-   * \param[in] cs Chip select pin.
-   * \param[in] opt Options.
-   */
-  SdSpiConfig(SdCsPin_t cs, uint8_t opt) : csPin(cs), options(opt) {}
-  /** SdSpiConfig constructor.
-   *
-   * \param[in] cs Chip select pin.
-   */
-  explicit SdSpiConfig(SdCsPin_t cs) : csPin(cs) {}
+    /** SdSpiConfig constructor.
+     *
+     * \param[in] cs Chip select pin.
+     * \param[in] opt Options.
+     * \param[in] maxSpeed Maximum SCK frequency.
+     */
+    SdSpiConfig(SdCsPin_t cs, uint8_t opt, uint32_t maxSpeed) :
+        csPin(cs), options(opt), maxSck(maxSpeed) {}
+    /** SdSpiConfig constructor.
+     *
+     * \param[in] cs Chip select pin.
+     * \param[in] opt Options.
+     */
+    SdSpiConfig(SdCsPin_t cs, uint8_t opt) : csPin(cs), options(opt) {}
+    /** SdSpiConfig constructor.
+     *
+     * \param[in] cs Chip select pin.
+     */
+    explicit SdSpiConfig(SdCsPin_t cs) : csPin(cs) {}
 
-  /** Chip select pin. */
-  const SdCsPin_t csPin;
-  /** Options */
-  const uint8_t options = 0;
-  /** Max SCK frequency */
-  const uint32_t maxSck = SD_SCK_MHZ(50);
-  /** SPI port */
-  SpiPort_t* spiPort = nullptr;
+    /** Chip select pin. */
+    const SdCsPin_t csPin;
+    /** Options */
+    const uint8_t options = 0;
+    /** Max SCK frequency */
+    const uint32_t maxSck = SD_SCK_MHZ(50);
+    /** SPI port */
+    SpiPort_t* spiPort = nullptr;
 };
 #if SPI_DRIVER_SELECT < 2
 #include "SdSpiArduinoDriver.h"

@@ -61,9 +61,10 @@ typedef uint8_t oflag_t;
 #define O_READ    O_RDONLY
 #define O_WRITE   O_WRONLY
 
-inline bool isWriteMode(oflag_t oflag) {
-  oflag &= O_ACCMODE;
-  return oflag == O_WRONLY || oflag == O_RDWR;
+inline bool isWriteMode(oflag_t oflag)
+{
+    oflag &= O_ACCMODE;
+    return oflag == O_WRONLY || oflag == O_RDWR;
 }
 
 // flags for ls()

@@ -27,60 +27,71 @@
 // Use of in-line for AVR to save flash.
 #define nop asm volatile ("nop\n\t")
 //------------------------------------------------------------------------------
-inline void SdSpiArduinoDriver::begin(SdSpiConfig spiConfig) {
-  (void)spiConfig;
-  SPI.begin();
+inline void SdSpiArduinoDriver::begin(SdSpiConfig spiConfig)
+{
+    (void)spiConfig;
+    SPI.begin();
 }
 //------------------------------------------------------------------------------
-inline void SdSpiArduinoDriver::activate() {
-  SPI.beginTransaction(m_spiSettings);
+inline void SdSpiArduinoDriver::activate()
+{
+    SPI.beginTransaction(m_spiSettings);
 }
 //------------------------------------------------------------------------------
-inline void SdSpiArduinoDriver::deactivate() {
-  SPI.endTransaction();
+inline void SdSpiArduinoDriver::deactivate()
+{
+    SPI.endTransaction();
 }
 //------------------------------------------------------------------------------
-inline uint8_t SdSpiArduinoDriver::receive() {
-  return SPI.transfer(0XFF);
+inline uint8_t SdSpiArduinoDriver::receive()
+{
+    return SPI.transfer(0XFF);
 }
 //------------------------------------------------------------------------------
-inline uint8_t SdSpiArduinoDriver::receive(uint8_t* buf, size_t count) {
-  if (count == 0) {
-    return 0;
-  }
-  uint8_t* pr = buf;
-  SPDR = 0XFF;
-  while (--count > 0) {
-    while (!(SPSR & _BV(SPIF))) {}
-    uint8_t in = SPDR;
+inline uint8_t SdSpiArduinoDriver::receive(uint8_t* buf, size_t count)
+{
+    if (count == 0)
+    {
+        return 0;
+    }
+    uint8_t* pr = buf;
     SPDR = 0XFF;
-    *pr++ = in;
-    // nops to optimize loop for 16MHz CPU 8 MHz SPI
-    nop;
-    nop;
-  }
-  while (!(SPSR & _BV(SPIF))) {}
-  *pr = SPDR;
-  return 0;
+    while (--count > 0)
+    {
+        while (!(SPSR & _BV(SPIF))) {}
+        uint8_t in = SPDR;
+        SPDR = 0XFF;
+        *pr++ = in;
+        // nops to optimize loop for 16MHz CPU 8 MHz SPI
+        nop;
+        nop;
+    }
+    while (!(SPSR & _BV(SPIF))) {}
+    *pr = SPDR;
+    return 0;
 }
 //------------------------------------------------------------------------------
-inline void SdSpiArduinoDriver::send(uint8_t data) {
-  SPI.transfer(data);
+inline void SdSpiArduinoDriver::send(uint8_t data)
+{
+    SPI.transfer(data);
 }
 //------------------------------------------------------------------------------
-inline void SdSpiArduinoDriver::send(const uint8_t* buf , size_t count) {
-  if (count == 0) {
-    return;
-  }
-  SPDR = *buf++;
-  while (--count > 0) {
-    uint8_t b = *buf++;
+inline void SdSpiArduinoDriver::send(const uint8_t* buf, size_t count)
+{
+    if (count == 0)
+    {
+        return;
+    }
+    SPDR = *buf++;
+    while (--count > 0)
+    {
+        uint8_t b = *buf++;
+        while (!(SPSR & (1 << SPIF))) {}
+        SPDR = b;
+        // nops to optimize loop for 16MHz CPU 8 MHz SPI
+        nop;
+        nop;
+    }
     while (!(SPSR & (1 << SPIF))) {}
-    SPDR = b;
-    // nops to optimize loop for 16MHz CPU 8 MHz SPI
-    nop;
-    nop;
-  }
-  while (!(SPSR & (1 << SPIF))) {}
 }
 #endif  // SdSpiAvr_h

@@ -45,12 +45,13 @@ typedef char ExChar_t;
  * \struct DirPos_t
  * \brief Internal type for position in directory file.
  */
-struct DirPos_t {
-  /** current cluster */
-  uint32_t cluster;
-  /** offset */
-  uint32_t position;
-  /** directory is contiguous */
-  bool     isContiguous;
+struct DirPos_t
+{
+    /** current cluster */
+    uint32_t cluster;
+    /** offset */
+    uint32_t position;
+    /** directory is contiguous */
+    bool     isContiguous;
 };
 #endif  // ExFatTypes_h

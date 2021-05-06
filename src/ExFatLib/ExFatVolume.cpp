@@ -25,17 +25,20 @@
 #include "ExFatVolume.h"
 ExFatVolume* ExFatVolume::m_cwv = nullptr;
 //-----------------------------------------------------------------------------
-bool ExFatVolume::chdir(const ExChar_t* path) {
-  ExFatFile dir;
-  if (!dir.open(vwd(), path, O_RDONLY)) {
-    goto fail;
-  }
-  if (!dir.isDir()) {
-    goto fail;
-  }
-  m_vwd = dir;
-  return true;
+bool ExFatVolume::chdir(const ExChar_t* path)
+{
+    ExFatFile dir;
+    if (!dir.open(vwd(), path, O_RDONLY))
+    {
+        goto fail;
+    }
+    if (!dir.isDir())
+    {
+        goto fail;
+    }
+    m_vwd = dir;
+    return true;
 
- fail:
-  return false;
+fail:
+    return false;
 }

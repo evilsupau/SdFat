@@ -32,37 +32,38 @@
  * \class FatFormatter
  * \brief Format a FAT volume.
  */
-class FatFormatter {
- public:
-  /**
-   * Format a FAT volume.
-   *
-   * \param[in] dev Block device for volume.
-   * \param[in] secBuffer buffer for writing to volume.
-   * \param[in] pr Print device for progress output.
-   *
-   * \return true for success or false for failure.
-   */
-  bool format(BlockDevice* dev, uint8_t* secBuffer, print_t* pr = nullptr);
+class FatFormatter
+{
+public:
+    /**
+     * Format a FAT volume.
+     *
+     * \param[in] dev Block device for volume.
+     * \param[in] secBuffer buffer for writing to volume.
+     * \param[in] pr Print device for progress output.
+     *
+     * \return true for success or false for failure.
+     */
+    bool format(BlockDevice* dev, uint8_t* secBuffer, print_t* pr = nullptr);
 
- private:
-  bool initFatDir(uint8_t fatType, uint32_t sectorCount);
-  void initPbs();
-  bool makeFat16();
-  bool makeFat32();
-  bool writeMbr();
-  uint32_t m_capacityMB;
-  uint32_t m_dataStart;
-  uint32_t m_fatSize;
-  uint32_t m_fatStart;
-  uint32_t m_relativeSectors;
-  uint32_t m_sectorCount;
-  uint32_t m_totalSectors;
-  BlockDevice* m_dev;
-  print_t*m_pr;
-  uint8_t* m_secBuf;
-  uint16_t m_reservedSectorCount;
-  uint8_t m_partType;
-  uint8_t m_sectorsPerCluster;
+private:
+    bool initFatDir(uint8_t fatType, uint32_t sectorCount);
+    void initPbs();
+    bool makeFat16();
+    bool makeFat32();
+    bool writeMbr();
+    uint32_t m_capacityMB;
+    uint32_t m_dataStart;
+    uint32_t m_fatSize;
+    uint32_t m_fatStart;
+    uint32_t m_relativeSectors;
+    uint32_t m_sectorCount;
+    uint32_t m_totalSectors;
+    BlockDevice* m_dev;
+    print_t* m_pr;
+    uint8_t* m_secBuf;
+    uint16_t m_reservedSectorCount;
+    uint8_t m_partType;
+    uint8_t m_sectorsPerCluster;
 };
 #endif  // FatFormatter_h

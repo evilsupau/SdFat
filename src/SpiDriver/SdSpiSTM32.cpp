@@ -33,45 +33,55 @@
 #error Unknown STM32 type
 #endif  // defined(__STM32F1__)
 //------------------------------------------------------------------------------
-void SdSpiArduinoDriver::activate() {
-  m_spi->beginTransaction(m_spiSettings);
+void SdSpiArduinoDriver::activate()
+{
+    m_spi->beginTransaction(m_spiSettings);
 }
 //------------------------------------------------------------------------------
-void SdSpiArduinoDriver::begin(SdSpiConfig spiConfig) {
-  if (spiConfig.spiPort) {
-    m_spi = spiConfig.spiPort;
-  } else {
-    m_spi = &SPI;
-  }
-  m_spi->begin();
+void SdSpiArduinoDriver::begin(SdSpiConfig spiConfig)
+{
+    if (spiConfig.spiPort)
+    {
+        m_spi = spiConfig.spiPort;
+    }
+    else
+    {
+        m_spi = &SPI;
+    }
+    m_spi->begin();
 }
 //------------------------------------------------------------------------------
-void SdSpiArduinoDriver::deactivate() {
-  m_spi->endTransaction();
+void SdSpiArduinoDriver::deactivate()
+{
+    m_spi->endTransaction();
 }
 //------------------------------------------------------------------------------
-uint8_t SdSpiArduinoDriver::receive() {
-  return m_spi->transfer(0XFF);
+uint8_t SdSpiArduinoDriver::receive()
+{
+    return m_spi->transfer(0XFF);
 }
 //------------------------------------------------------------------------------
-uint8_t SdSpiArduinoDriver::receive(uint8_t* buf, size_t count) {
+uint8_t SdSpiArduinoDriver::receive(uint8_t* buf, size_t count)
+{
 #if USE_STM32_DMA
-  return m_spi->dmaTransfer(nullptr, buf, count);
+    return m_spi->dmaTransfer(nullptr, buf, count);
 #else  // USE_STM32_DMA
-  m_spi->read(buf, count);
-  return 0;
+    m_spi->read(buf, count);
+    return 0;
 #endif  // USE_STM32_DMA
 }
 //------------------------------------------------------------------------------
-void SdSpiArduinoDriver::send(uint8_t data) {
-  m_spi->transfer(data);
+void SdSpiArduinoDriver::send(uint8_t data)
+{
+    m_spi->transfer(data);
 }
 //------------------------------------------------------------------------------
-void SdSpiArduinoDriver::send(const uint8_t* buf , size_t count) {
+void SdSpiArduinoDriver::send(const uint8_t* buf, size_t count)
+{
 #if USE_STM32_DMA
-  m_spi->dmaTransfer(const_cast<uint8*>(buf), nullptr, count);
+    m_spi->dmaTransfer(const_cast<uint8*>(buf), nullptr, count);
 #else  // USE_STM32_DMA
-  m_spi->write(const_cast<uint8*>(buf), count);
+    m_spi->write(const_cast<uint8*>(buf), count);
 #endif  // USE_STM32_DMA
 }
 #endif  // defined(SD_USE_CUSTOM_SPI) &&  defined(__STM32F1__)

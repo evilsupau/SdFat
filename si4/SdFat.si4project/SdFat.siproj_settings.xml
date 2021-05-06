@@ -17,6 +17,10 @@
 		<ImportedLibs/>
 	</Imports>
 	<ParseConditions>
-		<Defines/>
+		<Defines>
+			<define id="ENABLE_DEDICATED_SPI" value="1" />
+			<define id="HAS_SDIO_CLASS" value="1" />
+			<define id="USE_SD_CRC" value="0" />
+		</Defines>
 	</ParseConditions>
 </ProjectSettings>

@@ -32,18 +32,19 @@
 #ifndef DBG_FILE
 #error DBG_FILE not defined
 #endif  // DBG_FILE
-static void dbgPrint(uint16_t line) {
-  Serial.print(F("DBG_FAIL: "));
-  Serial.print(F(DBG_FILE));
-  Serial.write('.');
-  Serial.println(line);
+static void dbgPrint(uint16_t line)
+{
+    Serial.print(F("DBG_FAIL: "));
+    Serial.print(F(DBG_FILE));
+    Serial.write('.');
+    Serial.println(line);
 }
 
 #define DBG_PRINT_IF(b) if (b) {Serial.print(F(__FILE__));\
-                        Serial.println(__LINE__);}
+        Serial.println(__LINE__);}
 #define DBG_HALT_IF(b) if (b) {Serial.print(F("DBG_HALT "));\
-                       Serial.print(F(__FILE__)); Serial.println(__LINE__);\
-                       while (true) {}}
+        Serial.print(F(__FILE__)); Serial.println(__LINE__);\
+        while (true) {}}
 #define DBG_FAIL_MACRO dbgPrint(__LINE__);
 #else  // USE_DBG_MACROS
 #define DBG_FAIL_MACRO

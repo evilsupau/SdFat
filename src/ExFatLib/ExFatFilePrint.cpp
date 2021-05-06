@@ -28,154 +28,186 @@
 #include "upcase.h"
 #include "ExFatVolume.h"
 //------------------------------------------------------------------------------
-bool ExFatFile::ls(print_t* pr) {
-  ExFatFile file;
-  if (!isDir()) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
-  rewind();
-  while (file.openNext(this, O_RDONLY)) {
-    if (!file.isHidden()) {
-      file.printName(pr);
-      if (file.isDir()) {
-        pr->write('/');
-      }
-      pr->write('\r');
-      pr->write('\n');
+bool ExFatFile::ls(print_t* pr)
+{
+    ExFatFile file;
+    if (!isDir())
+    {
+        DBG_FAIL_MACRO;
+        goto fail;
     }
-    file.close();
-  }
-  if (getError()) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
-  return true;
+    rewind();
+    while (file.openNext(this, O_RDONLY))
+    {
+        if (!file.isHidden())
+        {
+            file.printName(pr);
+            if (file.isDir())
+            {
+                pr->write('/');
+            }
+            pr->write('\r');
+            pr->write('\n');
+        }
+        file.close();
+    }
+    if (getError())
+    {
+        DBG_FAIL_MACRO;
+        goto fail;
+    }
+    return true;
 
- fail:
-  return false;
+fail:
+    return false;
 }
 //------------------------------------------------------------------------------
-bool ExFatFile::ls(print_t* pr, uint8_t flags, uint8_t indent) {
-  ExFatFile file;
-  if (!isDir()) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
-  rewind();
-  while (file.openNext(this, O_RDONLY)) {
-    // indent for dir level
-    if (!file.isHidden() || (flags & LS_A)) {
-      for (uint8_t i = 0; i < indent; i++) {
-        pr->write(' ');
-      }
-      if (flags & LS_DATE) {
-        file.printModifyDateTime(pr);
-        pr->write(' ');
-      }
-      if (flags & LS_SIZE) {
-        file.printFileSize(pr);
-        pr->write(' ');
-      }
-      file.printName(pr);
-      if (file.isDir()) {
-        pr->write('/');
-      }
-      pr->write('\r');
-      pr->write('\n');
-      if ((flags & LS_R) && file.isDir()) {
-        file.ls(pr, flags, indent + 2);
-      }
+bool ExFatFile::ls(print_t* pr, uint8_t flags, uint8_t indent)
+{
+    ExFatFile file;
+    if (!isDir())
+    {
+        DBG_FAIL_MACRO;
+        goto fail;
     }
-    file.close();
-  }
-  if (getError()) {
-    DBG_FAIL_MACRO;
-    goto fail;
-  }
-  return true;
+    rewind();
+    while (file.openNext(this, O_RDONLY))
+    {
+        // indent for dir level
+        if (!file.isHidden() || (flags & LS_A))
+        {
+            for (uint8_t i = 0; i < indent; i++)
+            {
+                pr->write(' ');
+            }
+            if (flags & LS_DATE)
+            {
+                file.printModifyDateTime(pr);
+                pr->write(' ');
+            }
+            if (flags & LS_SIZE)
+            {
+                file.printFileSize(pr);
+                pr->write(' ');
+            }
+            file.printName(pr);
+            if (file.isDir())
+            {
+                pr->write('/');
+            }
+            pr->write('\r');
+            pr->write('\n');
+            if ((flags & LS_R) && file.isDir())
+            {
+                file.ls(pr, flags, indent + 2);
+            }
+        }
+        file.close();
+    }
+    if (getError())
+    {
+        DBG_FAIL_MACRO;
+        goto fail;
+    }
+    return true;
 
- fail:
-  return false;
+fail:
+    return false;
 }
 //------------------------------------------------------------------------------
-size_t ExFatFile::printAccessDateTime(print_t* pr) {
-  uint16_t date;
-  uint16_t time;
-  if (getAccessDateTime(&date, &time)) {
-    return fsPrintDateTime(pr, date, time);
-  }
-  return 0;
-}
-//------------------------------------------------------------------------------
-size_t ExFatFile::printCreateDateTime(print_t* pr) {
-  uint16_t date;
-  uint16_t time;
-  if (getCreateDateTime(&date, &time)) {
-    return fsPrintDateTime(pr, date, time);
-  }
-  return 0;
-}
-//------------------------------------------------------------------------------
-size_t ExFatFile::printFileSize(print_t* pr) {
-  uint64_t n = m_validLength;
-  char buf[21];
-  char *str = &buf[sizeof(buf) - 1];
-  char *bgn = str - 12;
-  *str = '\0';
-  do {
-    uint64_t m = n;
-    n /= 10;
-    *--str = m - 10*n + '0';
-  } while (n);
-  while (str > bgn) {
-    *--str = ' ';
-  }
-  return pr->write(str);
-}
-//------------------------------------------------------------------------------
-size_t ExFatFile::printModifyDateTime(print_t* pr) {
-  uint16_t date;
-  uint16_t time;
-  if (getModifyDateTime(&date, &time)) {
-    return fsPrintDateTime(pr, date, time);
-  }
-  return 0;
-}
-//------------------------------------------------------------------------------
-size_t ExFatFile::printName(print_t* pr) {
-  DirName_t* dn;
-  DirPos_t pos = m_dirPos;
-  size_t n = 0;
-  uint8_t in;
-  uint8_t buf[15];
-  if (!isOpen()) {
-      DBG_FAIL_MACRO;
-      goto fail;
-  }
-  for (uint8_t is = 1; is < m_setCount; is++) {
-    if (m_vol->dirSeek(&pos, is == 1 ? 64: 32) != 1) {
-      DBG_FAIL_MACRO;
-      goto fail;
+size_t ExFatFile::printAccessDateTime(print_t* pr)
+{
+    uint16_t date;
+    uint16_t time;
+    if (getAccessDateTime(&date, &time))
+    {
+        return fsPrintDateTime(pr, date, time);
     }
-    dn = reinterpret_cast<DirName_t*>
-         (m_vol->dirCache(&pos, FsCache::CACHE_FOR_READ));
-    if (!dn || dn->type != EXFAT_TYPE_NAME) {
-      DBG_FAIL_MACRO;
-      goto fail;
+    return 0;
+}
+//------------------------------------------------------------------------------
+size_t ExFatFile::printCreateDateTime(print_t* pr)
+{
+    uint16_t date;
+    uint16_t time;
+    if (getCreateDateTime(&date, &time))
+    {
+        return fsPrintDateTime(pr, date, time);
     }
-    for (in = 0; in < 15; in++) {
-      uint16_t c = getLe16(dn->unicode + 2*in);
-      if (!c) {
-        break;
-      }
-      buf[in] = c < 0X7f ? c : '?';
-      n++;
+    return 0;
+}
+//------------------------------------------------------------------------------
+size_t ExFatFile::printFileSize(print_t* pr)
+{
+    uint64_t n = m_validLength;
+    char buf[21];
+    char* str = &buf[sizeof(buf) - 1];
+    char* bgn = str - 12;
+    *str = '\0';
+    do
+    {
+        uint64_t m = n;
+        n /= 10;
+        *--str = m - 10 * n + '0';
+    } while (n);
+    while (str > bgn)
+    {
+        *--str = ' ';
     }
-    pr->write(buf, in);
-  }
-  return n;
+    return pr->write(str);
+}
+//------------------------------------------------------------------------------
+size_t ExFatFile::printModifyDateTime(print_t* pr)
+{
+    uint16_t date;
+    uint16_t time;
+    if (getModifyDateTime(&date, &time))
+    {
+        return fsPrintDateTime(pr, date, time);
+    }
+    return 0;
+}
+//------------------------------------------------------------------------------
+size_t ExFatFile::printName(print_t* pr)
+{
+    DirName_t* dn;
+    DirPos_t pos = m_dirPos;
+    size_t n = 0;
+    uint8_t in;
+    uint8_t buf[15];
+    if (!isOpen())
+    {
+        DBG_FAIL_MACRO;
+        goto fail;
+    }
+    for (uint8_t is = 1; is < m_setCount; is++)
+    {
+        if (m_vol->dirSeek(&pos, is == 1 ? 64 : 32) != 1)
+        {
+            DBG_FAIL_MACRO;
+            goto fail;
+        }
+        dn = reinterpret_cast<DirName_t*>
+             (m_vol->dirCache(&pos, FsCache::CACHE_FOR_READ));
+        if (!dn || dn->type != EXFAT_TYPE_NAME)
+        {
+            DBG_FAIL_MACRO;
+            goto fail;
+        }
+        for (in = 0; in < 15; in++)
+        {
+            uint16_t c = getLe16(dn->unicode + 2 * in);
+            if (!c)
+            {
+                break;
+            }
+            buf[in] = c < 0X7f ? c : '?';
+            n++;
+        }
+        pr->write(buf, in);
+    }
+    return n;
 
- fail:
-  return 0;
+fail:
+    return 0;
 }

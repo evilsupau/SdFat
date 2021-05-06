@@ -44,18 +44,21 @@ typedef uint16_t SdMillis_t;
  * \class SysCall
  * \brief SysCall - Class to wrap system calls.
  */
-class SysCall {
- public:
-  /** \return the time in milliseconds. */
-  static SdMillis_t curTimeMS();
-  /** Halt execution of this thread. */
-  static void halt() {
-    while (1) {
-      yield();
+class SysCall
+{
+public:
+    /** \return the time in milliseconds. */
+    static SdMillis_t curTimeMS();
+    /** Halt execution of this thread. */
+    static void halt()
+    {
+        while (1)
+        {
+            yield();
+        }
     }
-  }
-  /** Yield to other threads. */
-  static void yield();
+    /** Yield to other threads. */
+    static void yield();
 };
 #if ENABLE_ARDUINO_FEATURES
 #if defined(ARDUINO)
@@ -73,21 +76,25 @@ typedef Stream stream_t;
 #endif  // F
 //------------------------------------------------------------------------------
 /** \return the time in milliseconds. */
-inline SdMillis_t SysCall::curTimeMS() {
-  return millis();
+inline SdMillis_t SysCall::curTimeMS()
+{
+    return millis();
 }
 //------------------------------------------------------------------------------
 #if defined(PLATFORM_ID)  // Only defined if a Particle device
-inline void SysCall::yield() {
-  // Recommended to only call Particle.process() if system threading is disabled
-  if (system_thread_get_state(NULL) == spark::feature::DISABLED) {
-    Particle.process();
-  }
+inline void SysCall::yield()
+{
+    // Recommended to only call Particle.process() if system threading is disabled
+    if (system_thread_get_state(NULL) == spark::feature::DISABLED)
+    {
+        Particle.process();
+    }
 }
 #elif defined(ARDUINO)
-inline void SysCall::yield() {
-  // Use the external Arduino yield() function.
-  ::yield();
+inline void SysCall::yield()
+{
+    // Use the external Arduino yield() function.
+    ::yield();
 }
 #else  // defined(PLATFORM_ID)
 inline void SysCall::yield() {}
