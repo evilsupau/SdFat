@@ -381,7 +381,7 @@ bool istream::getNumber(uint32_t posMax, uint32_t negMax, uint32_t* num)
     setpos(&endPos);
     if (any > 0 || (have_zero && any >= 0))
     {
-        *num =  neg ? -val : val;
+        *num =  neg ? --val : val;
         return true;
     }
     setstate(failbit);

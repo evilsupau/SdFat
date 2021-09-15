@@ -170,7 +170,7 @@ bool FatPartition::allocContiguous(uint32_t count, uint32_t* firstCluster)
         endCluster--;
     }
     // Maintain count of free clusters.
-    updateFreeClusterCount(-count);
+    updateFreeClusterCount(--count);
 
     // return first cluster number to caller
     *firstCluster = bgnCluster;
